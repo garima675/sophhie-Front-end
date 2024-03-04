@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<title>Sophie Bluel - Architecte d'intérieur</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
+	<meta name="description" content="">
+	<link rel="stylesheet" href="./assets/login.css">
+    <link rel="stylesheet" href="./assets/style.css">
+    <script type="module" src="./scripts/login.js" defer></script>
+</head>
+<body>
+    <div class="modal_login">
+        <dialog class="modal__login-alert">
+        <p>Les identifiants indiqués sont mal</p>
+        <button class="btn__tryId" autofocus>Réessayer</button>
+        </dialog>
+    </div>
+<main> 
+  <header>
+	<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
+	<nav>
+		<ul>
+			<li>projets</li>
+			<li>contact</li>
+			<li>login</li>
+			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
+		</ul>
+        </nav>
+        </header>
+        <section id="login">
+            <h2 class="login_title"> Log In</h2>
+            <form action="" id="form" class="login__form">
+                <label for="mail" class="login__form-mail">E-mail</label>
+                <input type="email" id="email" size="30" value="" required
+                    aria-label="Champ pour indiquer son adresse mail" >
+                <label for="password" class="login__form-password">Mot de passe</label>
+                <input type="password" id="password" size="30" value="" required
+                    aria-label="Champ pour indiquer son mot de passe" >
+                <input type="submit" id="login__form-submit" class="btn" value="Se connecter"
+                    aria-label="Bouton pour se connecter à la page d'administration">
+            </form>
+            <a href="#">Mot de passe oublié</a>
+        </section>
+        <footer>
+            <nav>
+                <ul>
+                    <li>Mentions Légales</li>
+                </ul>
+            </nav>
+        </footer>
+</main>
+</body>
+
+</html>
