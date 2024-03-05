@@ -3,40 +3,35 @@ import { modalAlert } from "./login.js";
 const urlCategories = "http://localhost:5678/api/categories";
 const urlWorks = "http://localhost:5678/api/works";
 const urlLogin = "http://localhost:5678/api/users/login";
-let selectedCategoryId = 0; // by default, display all works
 
 // Global variable to store API data
 let worksData = [];
 
 function deleteWorks() {
+    // Get the gallery element from index.html
     const gallery = document.getElementsByClassName("gallery").item(0);
+    // Remove children of the gallery element
     while (gallery.firstChild) {
         gallery.removeChild(gallery.firstChild);
     }
 }
 
-function displayWorks() {
-    if (worksData.length > 0) {
-      deleteWorks();
-        populateGallery(worksData);
-    } else {
-        fetch(urlWorks)
-            .then(function (response) {
-                if (response.ok) {
-                  deleteWorks();
-                    return response.json();
-                }
-            })
-            .then(function (data) {
-                worksData = data;
-                populateGallery(worksData);
-            });
+async function fetchData(url) {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
     }
+    return response.json();
+}
+
+async function displayWorks() {
+    worksData = await fetchData(urlWorks);
+    deleteWorks();
+    populateGallery(worksData);
 }
 
 function populateGallery(data) {
     for (let work of data) {
-        if (selectedCategoryId === 0 || selectedCategoryId === work.categoryId) {
             const gallery = document.getElementsByClassName("gallery").item(0);
             const figure = document.createElement("figure");
             const image = document.createElement("img");
@@ -47,43 +42,49 @@ function populateGallery(data) {
             figCaption.textContent = work.title;
             gallery.appendChild(figure);
             figure.append(image, figCaption);
-        }
     }
 }
 
-function displayFilters() {
-    return new Promise((resolve) => {
-        fetch(urlCategories)
-            .then(function (response) {
-                if (response.ok) {
-                    return response.json();
-                }
-            })
-            .then(function (data) {
-                data.unshift({
-                    id: 0,
-                    name: "Tous",
-                });
-                const portfolio = document.getElementById("portfolio");
-                const gallery = document.getElementsByClassName("gallery").item(0);
-                const divFilters = document.createElement("div");
-                divFilters.setAttribute("id", "container-filters");
-                for (let category of data) {
-                    const button = document.createElement("button");
-                    button.classList.add("button-filter");
-                    button.textContent = category.name;
-                    button.id = category.id;
-                    divFilters.appendChild(button);
-                }
-                portfolio.insertBefore(divFilters, gallery);
-                resolve();
-            });
+async function displayFilters() {
+    const categories = ['Tous', ...new Set(worksData.map(work => work.category.name))];
+    const containerFilters = document.createElement('div');
+    containerFilters.id = 'container-filters';
+
+    categories.forEach(category => {
+        const button = document.createElement('button');
+        button.classList.add('button-filter');
+        button.textContent = category;
+        button.addEventListener('click', filterWorks);
+        containerFilters.appendChild(button);
     });
+
+    const portfolio = document.getElementById('portfolio');
+    const gallery = document.getElementsByClassName('gallery').item(0);
+    portfolio.insertBefore(containerFilters, gallery);
 }
 
-function filterWorks() {
-    selectedCategoryId = parseInt(event.target.id);
-    displayWorks();
+function filterWorks(event) {
+    const categoryName = event.target.textContent;
+    const filteredWorks = categoryName === 'Tous' ? worksData : worksData.filter(work => work.category.name === categoryName);
+    displayFilteredWorks(filteredWorks);
+}
+
+function displayFilteredWorks(works) {
+    const gallery = document.querySelector('.gallery');
+    gallery.innerHTML = ''; // Clear existing content
+
+    works.forEach(work => {
+        const figure = document.createElement('figure');
+        const image = document.createElement('img');
+        image.setAttribute('src', work.imageUrl);
+        image.setAttribute('alt', work.title);
+        const figCaption = document.createElement('figcaption');
+        figCaption.textContent = work.title;
+
+        figure.appendChild(image);
+        figure.appendChild(figCaption);
+        gallery.appendChild(figure);
+    });
 }
 
 function displayAdminMode() {
@@ -142,33 +143,26 @@ function displayModalDeleteWorks() {
 }
 
 async function displayWorksModal() {
-    fetch(urlWorks)
-        .then(function (response) {
-            if (response.ok) {
-                const gallery = document.getElementById("modal-gallery");
-                while (gallery.firstChild) {
-                    gallery.removeChild(gallery.firstChild);
-                }
-                return response.json();
-            }
-        })
-        .then(function (data) {
-            for (let work of data) {
-                const gallery = document.getElementById("modal-gallery");
-                const figure = document.createElement("figure");
-                figure.classList.add("modal-figure-works");
-                const image = document.createElement("img");
-                image.setAttribute("crossorigin", "anonymous");
-                image.setAttribute("src", work.imageUrl);
-                image.alt = work.title;
-                const deleteButton = document.createElement("i");
-                deleteButton.setAttribute("id", work.id);
-                deleteButton.classList.add("fa-solid", "fa-trash-can", "delete-work");
-                gallery.append(figure);
-                figure.append(deleteButton, image);
-            }
-        });
+    const gallery = document.getElementById("modal-gallery");
+    while (gallery.firstChild) {
+        gallery.removeChild(gallery.firstChild);
+    }
+    await displayWorks();
+    for (let work of worksData) {
+        const figure = document.createElement("figure");
+        figure.classList.add("modal-figure-works");
+        const image = document.createElement("img");
+        image.setAttribute("crossorigin", "anonymous");
+        image.setAttribute("src", work.imageUrl);
+        image.alt = work.title;
+        const deleteButton = document.createElement("i");
+        deleteButton.setAttribute("id", work.id);
+        deleteButton.classList.add("fa-solid", "fa-trash-can", "delete-work");
+        gallery.appendChild(figure);
+        figure.append(deleteButton, image);
+    }
 }
+
 
 function deleteWorksData(id) {
     fetch(`http://localhost:5678/api/works/${id}`, {
@@ -183,9 +177,9 @@ function deleteWorksData(id) {
             if (deletedElement) {
                 deletedElement.parentNode.removeChild(deletedElement);
             }
+            displayWorks();
             displayModalDeleteWorks();
             displayWorksModal();
-            displayWorks();
         }
     });
 }
@@ -373,7 +367,7 @@ async function updateGallery() {
 
 document.addEventListener("click", function (event) {
     if (event.target.matches(".button-filter")) {
-        filterWorks();
+        filterWorks(event);
     }
 });
 
@@ -475,9 +469,9 @@ document.addEventListener("click", function (event) {
 
 
 async function init() {
-    displayWorks();
+    await displayWorks();
     if (!sessionStorage.getItem("token")) {
-        displayFilters();
+        await displayFilters();
     }
     displayAdminMode();
 }

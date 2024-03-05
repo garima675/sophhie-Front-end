@@ -66,7 +66,6 @@ async function onSubmit(event) {
     modalAlert(
       "L'email ou le mot de passe n'est pas bon"
     );
-    console.log("mail: sophie.bluel@test.tld password: S0phie");
   }
 }
 
