@@ -15,7 +15,7 @@ function deleteWorks() {
         gallery.removeChild(gallery.firstChild);
     }
 }
-
+// fnction to fetch data 
 async function fetchData(url) {
     const response = await fetch(url);
     if (!response.ok) {
@@ -23,13 +23,13 @@ async function fetchData(url) {
     }
     return response.json();
 }
-
+// display works in the gallery using Api data
 async function displayWorks() {
     worksData = await fetchData(urlWorks);
     deleteWorks();
     populateGallery(worksData);
 }
-
+//function to populate the gallery with works
 function populateGallery(data) {
     for (let work of data) {
             const gallery = document.getElementsByClassName("gallery").item(0);
@@ -44,7 +44,7 @@ function populateGallery(data) {
             figure.append(image, figCaption);
     }
 }
-
+// function to display filter buttons
 async function displayFilters() {
     const categories = ['Tous', ...new Set(worksData.map(work => work.category.name))];
     const containerFilters = document.createElement('div');
@@ -57,18 +57,18 @@ async function displayFilters() {
         button.addEventListener('click', filterWorks);
         containerFilters.appendChild(button);
     });
-
+//Inserting filter buttons before gallery
     const portfolio = document.getElementById('portfolio');
     const gallery = document.getElementsByClassName('gallery').item(0);
     portfolio.insertBefore(containerFilters, gallery);
 }
-
+// function to filter works by category
 function filterWorks(event) {
     const categoryName = event.target.textContent;
     const filteredWorks = categoryName === 'Tous' ? worksData : worksData.filter(work => work.category.name === categoryName);
     displayFilteredWorks(filteredWorks);
 }
-
+// function to display filtered works in the gallery
 function displayFilteredWorks(works) {
     const gallery = document.querySelector('.gallery');
     gallery.innerHTML = ''; // Clear existing content
@@ -86,7 +86,7 @@ function displayFilteredWorks(works) {
         gallery.appendChild(figure);
     });
 }
-
+// function to display admin mode if user is logged in
 function displayAdminMode() {
     if (sessionStorage.getItem("token")) {
         const login = document.querySelector("#login");
@@ -109,7 +109,7 @@ function displayAdminMode() {
         });
     }
 }
-
+// function to clear modal content
 function clearModal() {
     const modalWrapperDelete = document.querySelector(".modal-wrapper-delete");
     const modalWrapperAdd = document.querySelector(".modal-wrapper-add");
@@ -124,7 +124,7 @@ function clearModal() {
         }
     }
 }
-
+// function to display delete works modal
 function displayModalDeleteWorks() {
     const modalWrapper = document.querySelector(".modal-wrapper-delete");
     const modalNav = document.createElement("div");
@@ -141,7 +141,7 @@ function displayModalDeleteWorks() {
     modalNav.append(closeModalButton);
     modalWrapper.append(modalNav, titleModal, containerGallery, addWorkButton);
 }
-
+// function to display works in delete works modal
 async function displayWorksModal() {
     const gallery = document.getElementById("modal-gallery");
     while (gallery.firstChild) {
@@ -163,7 +163,7 @@ async function displayWorksModal() {
     }
 }
 
-
+// function to delete works data using api
 function deleteWorksData(id) {
     fetch(`http://localhost:5678/api/works/${id}`, {
         method: "DELETE",
@@ -183,7 +183,7 @@ function deleteWorksData(id) {
         }
     });
 }
-
+// function to display add work modal
 function displayModalAddWork() {
     const modalWrapper = document.querySelector(".modal-wrapper-add");
     modalWrapper.style.display = null;
@@ -199,7 +199,7 @@ function displayModalAddWork() {
     modalWrapper.append(modalNav, titleModal);
     displayFormAddWork();
 }
-
+// function to go back from add work modal to delete works modal
 function goBackModal() {
     const modalWrapperAdd = document.querySelector(".modal-wrapper-add");
     modalWrapperAdd.style.display = "none";
@@ -209,7 +209,7 @@ function goBackModal() {
     const modalWrapperDelete = document.querySelector(".modal-wrapper-delete");
     modalWrapperDelete.style.display = null;
 }
-
+// function to display form for adding a work
 function displayFormAddWork() {
     const modalWrapper = document.querySelector(".modal-wrapper-add");
     const formAddWork = document.createElement("form");
@@ -280,7 +280,7 @@ function displayFormAddWork() {
     );
     verifForm();
 }
-
+//function to set options for category select in addition form
 function setOptionsSelectForm() {
     fetch(urlCategories)
         .then(function (response) {
@@ -304,7 +304,7 @@ function setOptionsSelectForm() {
             }
         });
 }
-
+//nction to verify form input
 function verifForm() {
     const formAddWork = document.querySelector(".form-add-works");
     const validForm = document.querySelector(".js-add-works");
@@ -319,7 +319,7 @@ function verifForm() {
         });
     });
 }
-
+// function to send data to add a work
 function sendData() {
     const title = document.getElementById("title").value;
     const selectCategory = document.getElementById("selectCategory");
@@ -364,26 +364,27 @@ async function updateGallery() {
     }
     displayWorksModal();
   }
-
+//event listers
+//Filter works when clicking on the chosen category
 document.addEventListener("click", function (event) {
     if (event.target.matches(".button-filter")) {
         filterWorks(event);
     }
 });
-
+// evnet:Log out when clicking on logout button
 document.addEventListener("click", function (event) {
     if (event.target.matches("#login")) {
         sessionStorage.removeItem("token");
     }
 });
-
+// Event:open the modal when clicking on mordifier button
 document.addEventListener("click", function (event) {
     if (event.target.matches(".open-modal")) {
         event.stopPropagation();
         modal.showModal();
     }
 });
-
+// Event: close the modal when clicking on close or outise of modal
 document.addEventListener("click", function (event) {
     if (event.target.matches(".close-modal-button")) {
         modal.close();
@@ -391,7 +392,7 @@ document.addEventListener("click", function (event) {
         modal.close();
     }
 });
-
+// Event:Delete works on the modal  and index.html when clicking on the trash can
 document.addEventListener("click", (event) => {
     if (event.target.matches(".delete-work")) {
         event.preventDefault();
@@ -400,7 +401,7 @@ document.addEventListener("click", (event) => {
         updateGallery();
     }
 });
-
+// Event:transfer to work addition modal when clicking on the add photo button
 document.addEventListener("click", function (event) {
     if (event.target.matches(".link-modal-add")) {
         event.preventDefault();
@@ -409,13 +410,13 @@ document.addEventListener("click", function (event) {
         displayModalAddWork();
     }
 });
-
+// Event: return to the work deletion modal when clicking on the arrow
 document.addEventListener("click", function (event) {
     if (event.target.matches(".go-back-button")) {
         goBackModal();
     }
 });
-
+// Event: get the file and update the preview when clicking on the validate button
 document.addEventListener("change", function (event) {
     if (event.target.matches(".input-image")) {
         const containerFormImg = document.querySelector(".container-add-img");
@@ -454,7 +455,7 @@ document.addEventListener("change", function (event) {
         }
     }
 });
-
+// Event: dend forn data when clicking on the submit button
 document.addEventListener("click", function (event) {
     if (event.target.matches(".js-add-works")) {
         event.preventDefault();
@@ -467,7 +468,7 @@ document.addEventListener("click", function (event) {
     }
 });
 
-
+// trigger function on page load
 async function init() {
     await displayWorks();
     if (!sessionStorage.getItem("token")) {
