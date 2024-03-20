@@ -1,8 +1,5 @@
 import { deleteWorksById, apiWorks} from "./api-utils.js";
-import { generateFilterButtons, displayWorks, worksData } from "./gallery.js";
 import { displayModalAlert } from "./login.js";
-import { adminPageAfterLogin, displayWorksModal } from "./modal-display.js";
-import { goBackModal, postNewWork, createModalAndDisplayForm } from "./modal-forms.js";
 
 async function initializeApplication() {
     await displayWorks(apiWorks);
