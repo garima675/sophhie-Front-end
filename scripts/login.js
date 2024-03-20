@@ -1,4 +1,4 @@
-import { loginUser } from './api-utils.js';
+import { loginUserAPICall } from './api-utils.js';
 
 // Function to create a modal alert element
 function createModalAlert(message) {
@@ -54,7 +54,7 @@ async function onSubmit(event) {
   };
 
   try {
-    let result = await loginUser(user); // Using loginUser from api-utils.js
+    let result = await loginUserAPICall(user); // Using loginUser from api-utils.js
 
     // If the credentials are correct
     sessionStorage.setItem("token", result.token);

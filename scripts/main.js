@@ -1,5 +1,6 @@
-import { deleteWorksById, apiWorks} from "./api-utils.js";
+import { deleteWorksByIdAPICall, apiWorks} from "./api-utils.js";
 import { displayModalAlert } from "./login.js";
+import { generateFilterButtons, displayWorks, worksData } from "./gallery.js";
 
 async function initializeApplication() {
     await displayWorks(apiWorks);
@@ -25,7 +26,7 @@ function attachEventListeners() {
             modal.close();
         } else if (eventObject.target.matches(".delete-work")) {
             eventObject.preventDefault();
-            deleteWorksById(eventObject.target.id);
+            deleteWorksByIdAPICall(eventObject.target.id);
             displayModalAlert("Suppression de la photo effectuée");
             refreshGallery();
         } else if (eventObject.target.matches(".link-modal-add")) {

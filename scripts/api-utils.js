@@ -4,7 +4,7 @@ export const apiWorks = "http://localhost:5678/api/works";
 export const apiLogin = "http://localhost:5678/api/users/login";
 
 // Function to fetch data from API
-export async function fetchWorksData() {
+export async function fetchWorksDataAPICall() {
     const fetchResponse = await fetch(apiWorks);
     if (!fetchResponse.ok) {
         throw new Error('Network response was not ok');
@@ -13,7 +13,7 @@ export async function fetchWorksData() {
 }
 
 // function to delete works data using api
-export function deleteWorksById(workId) {
+export function deleteWorksByIdAPICall(workId) {
     fetch(`${apiWorks}/${workId}`, {
         method: "DELETE",
         headers: {
@@ -31,7 +31,7 @@ export function deleteWorksById(workId) {
 }
 
 //Login api call
-export async function loginUser(credentials) {
+export async function loginUserAPICall(credentials) {
     const response = await fetch(apiLogin, {
         method: "POST",
         headers: {
@@ -46,7 +46,7 @@ export async function loginUser(credentials) {
 }
 
 //Add work api call
-export async function addWork(workData, userToken) {
+export async function addWorkAPICall(workData, userToken) {
     const response = await fetch(apiWorks, {
         method: "POST",
         headers: {
@@ -60,7 +60,7 @@ export async function addWork(workData, userToken) {
 }
 
 // Fetch Categories
-export async function fetchCategories() {
+export async function fetchCategoriesAPICall() {
     const response = await fetch(apiCategories);
     if (!response.ok) {
         throw new Error('Failed to fetch categories: ' + response.statusText);
