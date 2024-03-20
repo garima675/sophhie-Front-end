@@ -1,15 +1,19 @@
-// To create a modal alert when the response is not correct
-export async function modalAlert(message) {
+import { loginUser } from './api-utils.js';
+
+// Function to create a modal alert element
+function createModalAlert(message) {
   const modalAlert = document.createElement("dialog");
   modalAlert.classList.add("modal__alert");
   modalAlert.textContent = message;
+  return modalAlert;
+}
+
+// Function to add close functionality to the modal alert
+function addModalCloseFunctionality(modalAlert) {
   const exitModalBtn = document.createElement("button");
   exitModalBtn.classList.add("modal__alert-btn");
   exitModalBtn.textContent = "Retour";
   modalAlert.appendChild(exitModalBtn);
-  const loginSection = document.getElementById("login");
-  loginSection.appendChild(modalAlert);
-  modalAlert.showModal();
 
   exitModalBtn.addEventListener("click", function (event) {
     event.preventDefault();
@@ -26,51 +30,45 @@ export async function modalAlert(message) {
   };
 }
 
+// Function to display the modal alert
+export async function displayModalAlert(message) {
+  const modalAlert = createModalAlert(message);
+  addModalCloseFunctionality(modalAlert);
+  document.getElementById("login").appendChild(modalAlert);
+  modalAlert.showModal();
+}
+
 // Retrieving the form element
 const form = document.querySelector("form");
 
 /**
  * Login
- * @param {string} event Click on the login button
+ * @param {Event} event The submit event from the login form.
  */
 async function onSubmit(event) {
   event.preventDefault();
-  // Defining user credentials
+  
   let user = {
     email: form.email.value,
     password: form.password.value,
   };
 
-  // Fetching data from the API
-  let response = await fetch(
-    "http://localhost:5678/api/users/login",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-      body: JSON.stringify(user),
-    }
-  );
+  try {
+    let result = await loginUser(user); // Using loginUser from api-utils.js
 
-  let result = await response.json();
-
-  // If the credentials are correct
-  if (response.status === 200) {
+    // If the credentials are correct
     sessionStorage.setItem("token", result.token);
-    window.location.replace(`index.html`);
-    // Otherwise, if the credentials are incorrect
-  } else if (response.status === 404 || response.status === 401) {
+    window.location.replace("index.html");
+  } catch (error) {
+    // Assuming all errors are credential related for simplicity
     form.email.value = "";
     form.password.value = "";
-    modalAlert(
-      "L'email ou le mot de passe n'est pas bon"
-    );
+    displayModalAlert("L'email ou le mot de passe n'est pas bon");
   }
 }
 
-// To show the modal error message
+// Add event listener to the form to trigger the login process
 form.addEventListener("submit", onSubmit);
 
-const body = document.querySelector("body");
-body.style.height = "100%";
+// Additional styles for the body
+document.querySelector("body").style.height = "100%";
