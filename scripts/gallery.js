@@ -9,14 +9,14 @@ export function deleteWorks() {
     }
 }
 
-export async function displayWorks(worksUrl) {
+export async function displayWorks() {
     worksData = await fetchWorksDataAPICall();
     deleteWorks();
     populateGallery(worksData);
 }
 
-function populateGallery(worksDataArray) {
-    for (let work of worksDataArray) {
+function populateGallery(worksArray) {
+    for (let work of worksArray) {
         const galleryRef = document.getElementsByClassName("gallery").item(0);
         const figureNode = document.createElement("figure");
         const imgNode = document.createElement("img");

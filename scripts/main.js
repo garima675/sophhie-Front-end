@@ -1,9 +1,11 @@
 import { deleteWorksByIdAPICall, apiWorks} from "./api-utils.js";
 import { displayModalAlert } from "./login.js";
 import { generateFilterButtons, displayWorks, worksData } from "./gallery.js";
+import { adminPageAfterLogin, displayWorksModal } from "./modal-display.js";
+import { goBackModal, postNewWork, createModalAndDisplayForm } from "./modal-forms.js";
 
 async function initializeApplication() {
-    await displayWorks(apiWorks);
+    await displayWorks();
     if (!sessionStorage.getItem("token")) {
         await generateFilterButtons(worksData);
     }
@@ -11,7 +13,7 @@ async function initializeApplication() {
 }
 
 async function refreshGallery() {
-    await displayWorks(apiWorks);
+    await displayWorks();
     displayWorksModal();
 }
 
